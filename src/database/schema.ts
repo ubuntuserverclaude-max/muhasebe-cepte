@@ -1,0 +1,90 @@
+import { appSchema, tableSchema } from '@nozbe/watermelondb';
+
+export const schema = appSchema({
+  version: 1,
+  tables: [
+    tableSchema({
+      name: 'companies',
+      columns: [
+        { name: 'name', type: 'string' },
+        { name: 'tax_number', type: 'string', isOptional: true },
+        { name: 'address', type: 'string', isOptional: true },
+        { name: 'phone', type: 'string', isOptional: true },
+        { name: 'email', type: 'string', isOptional: true },
+        { name: 'settings', type: 'string', isOptional: true },
+        { name: 'created_at', type: 'number' },
+      ],
+    }),
+    tableSchema({
+      name: 'contacts',
+      columns: [
+        { name: 'company_id', type: 'string', isIndexed: true },
+        { name: 'type', type: 'string' },
+        { name: 'name', type: 'string' },
+        { name: 'tax_number', type: 'string', isOptional: true },
+        { name: 'phone', type: 'string', isOptional: true },
+        { name: 'email', type: 'string', isOptional: true },
+        { name: 'address', type: 'string', isOptional: true },
+        { name: 'balance', type: 'number' },
+        { name: 'created_at', type: 'number' },
+      ],
+    }),
+    tableSchema({
+      name: 'products',
+      columns: [
+        { name: 'company_id', type: 'string', isIndexed: true },
+        { name: 'name', type: 'string' },
+        { name: 'description', type: 'string', isOptional: true },
+        { name: 'category', type: 'string', isOptional: true },
+        { name: 'unit', type: 'string' },
+        { name: 'price', type: 'number' },
+        { name: 'stock_quantity', type: 'number' },
+        { name: 'barcode', type: 'string', isOptional: true },
+        { name: 'created_at', type: 'number' },
+      ],
+    }),
+    tableSchema({
+      name: 'transactions',
+      columns: [
+        { name: 'company_id', type: 'string', isIndexed: true },
+        { name: 'type', type: 'string' },
+        { name: 'contact_id', type: 'string', isOptional: true },
+        { name: 'amount', type: 'number' },
+        { name: 'description', type: 'string' },
+        { name: 'category', type: 'string', isOptional: true },
+        { name: 'payment_method', type: 'string', isOptional: true },
+        { name: 'date', type: 'number' },
+        { name: 'created_at', type: 'number' },
+      ],
+    }),
+    tableSchema({
+      name: 'invoices',
+      columns: [
+        { name: 'company_id', type: 'string', isIndexed: true },
+        { name: 'invoice_number', type: 'string' },
+        { name: 'contact_id', type: 'string' },
+        { name: 'type', type: 'string' },
+        { name: 'date', type: 'number' },
+        { name: 'due_date', type: 'number', isOptional: true },
+        { name: 'subtotal', type: 'number' },
+        { name: 'tax_amount', type: 'number' },
+        { name: 'total', type: 'number' },
+        { name: 'status', type: 'string' },
+        { name: 'notes', type: 'string', isOptional: true },
+        { name: 'created_at', type: 'number' },
+      ],
+    }),
+    tableSchema({
+      name: 'invoice_items',
+      columns: [
+        { name: 'invoice_id', type: 'string', isIndexed: true },
+        { name: 'product_id', type: 'string', isOptional: true },
+        { name: 'description', type: 'string' },
+        { name: 'quantity', type: 'number' },
+        { name: 'unit_price', type: 'number' },
+        { name: 'tax_rate', type: 'number' },
+        { name: 'amount', type: 'number' },
+      ],
+    }),
+  ],
+});

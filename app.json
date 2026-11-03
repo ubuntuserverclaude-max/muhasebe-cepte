@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Muhasebe Cepte",
+    "slug": "muhasebe-cepte",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "owner": "muh.serkanozgur",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.muhasebecepte.app"
+    },
+    "android": {
+      "package": "com.muhasebecepte.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#00C853"
+      },
+      "permissions": []
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "scheme": "muhasebecepte",
+    "plugins": [
+      "expo-router"
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "6705cc60-aa42-4172-839a-62b7f5afa7a4"
+      }
+    }
+  }
+}
