@@ -55,7 +55,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci --legacy-peer-deps
+          # Force npm install with legacy peer deps to resolve React version conflicts
+          npm install --legacy-peer-deps --no-audit --no-fund
+          # Fix Expo dependencies
           npx expo install --fix
 
       - name: Run Expo Prebuild
