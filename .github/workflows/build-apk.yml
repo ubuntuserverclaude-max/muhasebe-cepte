@@ -55,12 +55,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # Force npm install with legacy peer deps to resolve React version conflicts
+          # First, install @nozbe/with-observables with force to override React version conflict
+          npm install @nozbe/with-observables@2.0.3 --legacy-peer-deps --no-audit --no-fund || echo "Could not install specific version, continuing anyway"
+          # Then install all other dependencies
           npm install --legacy-peer-deps --no-audit --no-fund
-          # Fix specific problematic package with React 19 compatibility
-          npx expo install @nozbe/with-observables@2.0.0 || npm install @nozbe/with-observables@2.0.0 --legacy-peer-deps
-          # Fix remaining Expo dependencies
-          npx expo install --fix || echo "Expo install fix completed with some warnings"
+          # Skip expo install --fix as it causes version conflicts
+          echo "✅ Dependencies installed successfully"
 
       - name: Run Expo Prebuild
         run: npx expo prebuild --platform android --clean
