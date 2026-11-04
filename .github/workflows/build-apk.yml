@@ -46,9 +46,11 @@ jobs:
 
       - name: Install Android SDK and accept licenses
         run: |
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "patcher;v4" "cmdline-tools;latest"
-          echo "Android SDK installed successfully"
+          # Accept all licenses non-interactively
+          (yes || true) | sdkmanager --licenses
+          # Install essential Android SDK components
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          echo "✅ Android SDK installed successfully"
 
       - name: Install dependencies
         run: |
