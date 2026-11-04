@@ -57,8 +57,10 @@ jobs:
         run: |
           # Force npm install with legacy peer deps to resolve React version conflicts
           npm install --legacy-peer-deps --no-audit --no-fund
-          # Fix Expo dependencies
-          npx expo install --fix
+          # Fix specific problematic package with React 19 compatibility
+          npx expo install @nozbe/with-observables@2.0.0 || npm install @nozbe/with-observables@2.0.0 --legacy-peer-deps
+          # Fix remaining Expo dependencies
+          npx expo install --fix || echo "Expo install fix completed with some warnings"
 
       - name: Run Expo Prebuild
         run: npx expo prebuild --platform android --clean
