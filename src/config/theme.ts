@@ -1,29 +1,29 @@
 export const theme = {
   colors: {
     // Primary - Yeşil
-    primary: '#00C853',
-    primaryDark: '#00A843',
-    primaryLight: '#5EFC82',
+    primary: '#00C853' as const,
+    primaryDark: '#00A843' as const,
+    primaryLight: '#5EFC82' as const,
 
     // Background - Siyah tonları
-    background: '#121212',
-    surface: '#1E1E1E',
-    surfaceVariant: '#2C2C2C',
+    background: '#121212' as const,
+    surface: '#1E1E1E' as const,
+    surfaceVariant: '#2C2C2C' as const,
 
     // Text
-    textPrimary: '#FFFFFF',
-    textSecondary: '#B0B0B0',
-    textDisabled: '#6C6C6C',
+    textPrimary: '#FFFFFF' as const,
+    textSecondary: '#B0B0B0' as const,
+    textDisabled: '#6C6C6C' as const,
 
     // Status
-    success: '#00C853',
-    error: '#FF5252',
-    warning: '#FFC107',
-    info: '#2196F3',
+    success: '#00C853' as const,
+    error: '#FF5252' as const,
+    warning: '#FFC107' as const,
+    info: '#2196F3' as const,
 
     // Accent
-    income: '#00C853',
-    expense: '#FF5252',
+    income: '#00C853' as const,
+    expense: '#FF5252' as const,
   },
   spacing: {
     xs: 4,

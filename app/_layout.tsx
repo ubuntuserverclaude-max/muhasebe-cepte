@@ -7,7 +7,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     initialize();
-  }, []);
+  }, [initialize]);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const schema = appSchema({
-  version: 1,
+  version: 2,
   tables: [
     tableSchema({
       name: 'companies',
@@ -84,6 +84,38 @@ export const schema = appSchema({
         { name: 'unit_price', type: 'number' },
         { name: 'tax_rate', type: 'number' },
         { name: 'amount', type: 'number' },
+      ],
+    }),
+    tableSchema({
+      name: 'checks',
+      columns: [
+        { name: 'company_id', type: 'string', isIndexed: true },
+        { name: 'check_number', type: 'string' },
+        { name: 'contact_id', type: 'string' },
+        { name: 'type', type: 'string' },
+        { name: 'amount', type: 'number' },
+        { name: 'due_date', type: 'number' },
+        { name: 'bank_name', type: 'string', isOptional: true },
+        { name: 'drawer', type: 'string', isOptional: true },
+        { name: 'status', type: 'string' },
+        { name: 'notes', type: 'string', isOptional: true },
+        { name: 'created_at', type: 'number' },
+      ],
+    }),
+    tableSchema({
+      name: 'promissory_notes',
+      columns: [
+        { name: 'company_id', type: 'string', isIndexed: true },
+        { name: 'note_number', type: 'string', isOptional: true },
+        { name: 'contact_id', type: 'string' },
+        { name: 'type', type: 'string' },
+        { name: 'amount', type: 'number' },
+        { name: 'due_date', type: 'number' },
+        { name: 'debtor', type: 'string', isOptional: true },
+        { name: 'guarantor', type: 'string', isOptional: true },
+        { name: 'status', type: 'string' },
+        { name: 'notes', type: 'string', isOptional: true },
+        { name: 'created_at', type: 'number' },
       ],
     }),
   ],

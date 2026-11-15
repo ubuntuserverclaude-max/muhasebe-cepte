@@ -23,7 +23,7 @@ export default function TabLayout() {
         options={{
           title: 'Dashboard',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="view-dashboard" size={24} color={color} />
+            <MaterialCommunityIcons name="view-dashboard" size={24} color={color as string} />
           ),
         }}
       />
@@ -32,7 +32,7 @@ export default function TabLayout() {
         options={{
           title: 'İşlemler',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="cash-multiple" size={24} color={color} />
+            <MaterialCommunityIcons name="cash-multiple" size={24} color={color as string} />
           ),
         }}
       />
@@ -41,7 +41,7 @@ export default function TabLayout() {
         options={{
           title: 'Faturalar',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="file-document" size={24} color={color} />
+            <MaterialCommunityIcons name="file-document" size={24} color={color as string} />
           ),
         }}
       />
@@ -50,7 +50,16 @@ export default function TabLayout() {
         options={{
           title: 'Cariler',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="account-group" size={24} color={color} />
+            <MaterialCommunityIcons name="account-group" size={24} color={color as string} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="checks"
+        options={{
+          title: 'Çek/Senet',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="checkbook" size={24} color={color as string} />
           ),
         }}
       />
@@ -59,7 +68,7 @@ export default function TabLayout() {
         options={{
           title: 'Daha Fazla',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="menu" size={24} color={color} />
+            <MaterialCommunityIcons name="menu" size={24} color={color as string} />
           ),
         }}
       />

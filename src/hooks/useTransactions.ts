@@ -6,13 +6,12 @@ import { useAuthStore } from '@/store/authStore';
 
 export function useTransactions(limit = 50) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
   const user = useAuthStore((state) => state.user);
   const companyId = user?.user_metadata?.company_id;
+  const [loading, setLoading] = useState(!companyId);
 
   useEffect(() => {
     if (!companyId) {
-      setLoading(false);
       return;
     }
 

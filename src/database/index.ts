@@ -7,6 +7,8 @@ import { Contact } from './models/Contact';
 import { Product } from './models/Product';
 import { Invoice } from './models/Invoice';
 import { InvoiceItem } from './models/InvoiceItem';
+import { Check } from './models/Check';
+import { PromissoryNote } from './models/PromissoryNote';
 
 const adapter = new SQLiteAdapter({
   schema,
@@ -15,5 +17,5 @@ const adapter = new SQLiteAdapter({
 
 export const database = new Database({
   adapter,
-  modelClasses: [Company, Transaction, Contact, Product, Invoice, InvoiceItem],
+  modelClasses: [Company, Transaction, Contact, Product, Invoice, InvoiceItem, Check, PromissoryNote],
 });

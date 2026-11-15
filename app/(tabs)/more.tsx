@@ -6,23 +6,24 @@ import { theme } from '@/config/theme';
 import { useProducts } from '@/hooks/useProducts';
 import { ProductCard } from '@/components/ProductCard';
 import { EmptyState } from '@/components/EmptyState';
+import { BarcodeScannerModal } from '@/components/BarcodeScannerModal';
 import { sanitizeInput, validateAmount } from '@/utils/validation';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore } from '@/store/authStore';
 
 export default function MoreScreen() {
   const signOut = useAuthStore((state) => state.signOut);
-  const { products, loading } = useProducts();
+  const { products, addProduct } = useProducts();
   const [showProducts, setShowProducts] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [scannerVisible, setScannerVisible] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [unit, setUnit] = useState('adet');
   const [price, setPrice] = useState('');
   const [stockQuantity, setStockQuantity] = useState('');
-
-  const { addProduct } = useProducts();
+  const [barcode, setBarcode] = useState('');
 
   const handleSubmit = async () => {
     if (!name.trim()) {
@@ -46,6 +47,7 @@ export default function MoreScreen() {
         unit: unit.trim(),
         price: parseFloat(price),
         stockQuantity: parseFloat(stockQuantity),
+        barcode: barcode.trim() || undefined,
       });
 
       setModalVisible(false);
@@ -54,6 +56,7 @@ export default function MoreScreen() {
       setCategory('');
       setPrice('');
       setStockQuantity('');
+      setBarcode('');
       Alert.alert('Başarılı', 'Ürün eklendi');
     } catch (error: any) {
       Alert.alert('Hata', error.message || 'Ürün eklenemedi');
@@ -99,6 +102,26 @@ export default function MoreScreen() {
                 outlineColor={theme.colors.surfaceVariant}
                 activeOutlineColor={theme.colors.primary}
               />
+
+              <View style={styles.barcodeRow}>
+                <TextInput
+                  label="Barkod (opsiyonel)"
+                  value={barcode}
+                  onChangeText={setBarcode}
+                  mode="outlined"
+                  style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                  outlineColor={theme.colors.surfaceVariant}
+                  activeOutlineColor={theme.colors.primary}
+                />
+                <Button
+                  mode="contained"
+                  onPress={() => setScannerVisible(true)}
+                  style={styles.scanButton}
+                  icon="barcode-scan"
+                >
+                  Tara
+                </Button>
+              </View>
 
               <TextInput
                 label="Açıklama (opsiyonel)"
@@ -174,6 +197,15 @@ export default function MoreScreen() {
               </View>
             </ScrollView>
           </Modal>
+
+          <BarcodeScannerModal
+            visible={scannerVisible}
+            onClose={() => setScannerVisible(false)}
+            onScan={(code) => {
+              setBarcode(code);
+              setScannerVisible(false);
+            }}
+          />
         </Portal>
 
         <FAB
@@ -192,7 +224,7 @@ export default function MoreScreen() {
 
       <View style={styles.menuItem} onTouchEnd={() => setShowProducts(true)}>
         <MaterialCommunityIcons name="package-variant" size={24} color={theme.colors.primary} />
-        <Text style={styles.menuText}>Ürünler</Text>
+        <Text style={styles.menuText}>Ürünler ve Barkod</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color={theme.colors.textSecondary} />
       </View>
 
@@ -252,12 +284,13 @@ const styles = StyleSheet.create({
     color: theme.colors.textPrimary,
     fontSize: 16,
     marginLeft: theme.spacing.md,
+    fontWeight: '500',
   },
   logoutButton: {
     marginTop: theme.spacing.xl,
   },
   list: {
-    paddingBottom: theme.spacing.xl,
+    paddingBottom: 80,
   },
   emptyList: {
     flex: 1,
@@ -273,13 +306,23 @@ const styles = StyleSheet.create({
     padding: theme.spacing.lg,
     margin: theme.spacing.lg,
     borderRadius: 12,
-    maxHeight: '85%',
+    maxHeight: '90%',
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     color: theme.colors.textPrimary,
     marginBottom: theme.spacing.md,
+  },
+  barcodeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: theme.spacing.md,
+    gap: 8,
+  },
+  scanButton: {
+    height: 56,
+    justifyContent: 'center',
   },
   input: {
     marginBottom: theme.spacing.md,

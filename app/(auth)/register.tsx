@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, ScrollView } from 'react-native';
+import { StyleSheet, Alert, ScrollView } from 'react-native';
 import { TextInput, Button, Text } from 'react-native-paper';
 import { Link, router } from 'expo-router';
 import { theme } from '@/config/theme';

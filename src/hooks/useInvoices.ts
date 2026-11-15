@@ -14,14 +14,13 @@ export interface InvoiceItemInput {
 }
 
 export function useInvoices() {
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loading, setLoading] = useState(true);
   const user = useAuthStore((state) => state.user);
   const companyId = user?.user_metadata?.company_id;
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [loading, setLoading] = useState(!companyId);
 
   useEffect(() => {
     if (!companyId) {
-      setLoading(false);
       return;
     }
 
