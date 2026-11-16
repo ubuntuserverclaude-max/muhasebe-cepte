@@ -20,7 +20,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "muhasebecepte",
+    "scheme": "muhasebe-cepte",
     "plugins": [
       "expo-router",
       "expo-status-bar"

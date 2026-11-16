@@ -6,3 +6,20 @@ Starting Metro Bundler
 Waiting on http://c-muhserkanozgur-ojjb06-mwhibr97edt2s4mm.on.expo.app
 
 Logs for your project will appear below.
+/home/serkan/muhasebe-cepte-clone/app-src/node_modules/expo/node_modules/@expo/cli/build/src/utils/errors.js:154
+    throw error;
+    ^
+
+Error: Unexpected server response: 403
+    at ClientRequest.<anonymous> (/home/serkan/muhasebe-cepte-clone/app-src/node_modules/expo/node_modules/ws/lib/websocket.js:949:7)
+    at ClientRequest.emit (node:events:519:28)
+    at HTTPParser.parserOnIncomingClient (node:_http_client:780:27)
+    at HTTPParser.parserOnHeadersComplete (node:_http_common:125:17)
+    at TLSSocket.socketOnData (node:_http_client:615:22)
+    at TLSSocket.emit (node:events:519:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at TLSWrap.onStreamRead (node:internal/stream_base_commons:189:23)
+
+Node.js v22.23.5
