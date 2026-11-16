@@ -15,15 +15,15 @@
       "package": "com.muhasebecepte.app",
       "adaptiveIcon": {
         "backgroundColor": "#00C853"
-      },
-      "permissions": []
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "scheme": "muhasebecepte",
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-status-bar"
     ],
     "extra": {
       "router": {
