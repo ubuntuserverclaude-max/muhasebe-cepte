@@ -1,19 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   SafeAreaView, Alert, ActivityIndicator, KeyboardAvoidingView, Platform
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const API_URL = 'http://100.103.221.60:3001';
 const ADMIN_EMAIL = 'muh.serkanozgur@gmail.com';
 const ADMIN_PASS = '3797';
+const GOOGLE_ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID || 'YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com';
+const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState(ADMIN_EMAIL);
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: GOOGLE_ANDROID_CLIENT_ID,
+    webClientId: GOOGLE_WEB_CLIENT_ID,
+  });
+
+  useEffect(() => {
+    if (response?.type === 'success' && response.authentication?.accessToken) {
+      fetchGoogleUser(response.authentication.accessToken);
+    }
+  }, [response]);
+
+  const fetchGoogleUser = async (token: string) => {
+    setLoading(true);
+    try {
+      const userInfoRes = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const gUser = await userInfoRes.json();
+      const gEmail = (gUser.email || '').trim().toLowerCase();
+
+      const storedUsersRaw = await AsyncStorage.getItem('app_users');
+      const storedUsers = storedUsersRaw ? JSON.parse(storedUsersRaw) : [];
+      const matchedLocal = storedUsers.find((u: any) => u.email.toLowerCase() === gEmail);
+
+      if (gEmail === ADMIN_EMAIL || matchedLocal) {
+        await AsyncStorage.setItem('current_user', JSON.stringify({
+          email: gEmail,
+          name: gEmail === ADMIN_EMAIL ? 'Serkan Özgür (Yönetici)' : (gUser.name || matchedLocal.name),
+          role: gEmail === ADMIN_EMAIL ? 'admin' : 'user',
+          apiUrl: API_URL,
+          driveAccount: 'ubuntuserverclaude@gmail.com',
+          authProvider: 'google',
+        }));
+        router.replace('/(tabs)');
+      } else {
+        Alert.alert(
+          'Yetkisiz Google Hesabı',
+          `${gEmail} adresi sistemde kayıtlı değil. Lütfen yöneticinizden (muh.serkanozgur@gmail.com) yetki isteyin.`
+        );
+      }
+    } catch {
+      Alert.alert('Google Giriş Hatası', 'Google hesap bilgileri alınamadı.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogin = async (customPass?: string) => {
     const activeEmail = email.trim().toLowerCase();
@@ -26,7 +79,6 @@ export default function LoginScreen() {
 
     setLoading(true);
     try {
-      // 1. Yerel kayitli kullanicilar veya varsayilan yonetici kontrolu
       const storedUsersRaw = await AsyncStorage.getItem('app_users');
       const storedUsers = storedUsersRaw ? JSON.parse(storedUsersRaw) : [];
       const matchedLocal = storedUsers.find(
@@ -39,17 +91,16 @@ export default function LoginScreen() {
           name: activeEmail === ADMIN_EMAIL ? 'Serkan Özgür (Yönetici)' : matchedLocal.name,
           role: activeEmail === ADMIN_EMAIL ? 'admin' : 'user',
           apiUrl: API_URL,
-          driveAccount: 'ubuntuserverclaude@gmail.com'
+          driveAccount: 'ubuntuserverclaude@gmail.com',
         }));
         router.replace('/(tabs)');
         return;
       }
 
-      // 2. Sunucu API dogrulama denemesi
       const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: activeEmail, password: activePass })
+        body: JSON.stringify({ email: activeEmail, password: activePass }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -75,6 +126,20 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.card}>
+          <TouchableOpacity
+            style={styles.googleBtn}
+            disabled={!request || loading}
+            onPress={() => promptAsync()}
+          >
+            <Text style={styles.googleBtnText}>G  Google ile Devam Et</Text>
+          </TouchableOpacity>
+
+          <View style={styles.dividerRow}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>VEYA E-POSTA İLE</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
           <Text style={styles.label}>E-POSTA ADRESİ</Text>
           <TextInput
             style={styles.input}
@@ -135,7 +200,19 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 2,
   },
-  label: { fontSize: 12, fontWeight: '600', color: '#8E8E93', marginBottom: 6, marginTop: 12 },
+  googleBtn: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D1D1D6',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  googleBtnText: { color: '#000000', fontSize: 16, fontWeight: '600' },
+  dividerRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 16 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: '#E5E5EA' },
+  dividerText: { fontSize: 11, fontWeight: '600', color: '#8E8E93', marginHorizontal: 10 },
+  label: { fontSize: 12, fontWeight: '600', color: '#8E8E93', marginBottom: 6, marginTop: 8 },
   input: {
     backgroundColor: '#F2F2F7',
     borderRadius: 12,
@@ -149,7 +226,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 18,
   },
   primaryBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
   quickBtn: {
@@ -157,7 +234,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: 10,
   },
   quickBtnText: { color: '#007AFF', fontSize: 14, fontWeight: '600' },
   footerInfo: { textAlign: 'center', fontSize: 12, color: '#8E8E93', marginTop: 20 },
