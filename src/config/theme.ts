@@ -1,29 +1,29 @@
 export const theme = {
   colors: {
-    // Primary - Yeşil
+    // Primary - Kurumsal Yeşil / iOS Uyumlu
     primary: '#00C853' as const,
     primaryDark: '#00A843' as const,
     primaryLight: '#5EFC82' as const,
 
-    // Background - Siyah tonları
-    background: '#121212' as const,
-    surface: '#1E1E1E' as const,
-    surfaceVariant: '#2C2C2C' as const,
+    // Background - iOS Ferah Beyaz/Açık Gri (#F2F2F7)
+    background: '#F2F2F7' as const,
+    surface: '#FFFFFF' as const,
+    surfaceVariant: '#E5E5EA' as const,
 
     // Text
-    textPrimary: '#FFFFFF' as const,
-    textSecondary: '#B0B0B0' as const,
-    textDisabled: '#6C6C6C' as const,
+    textPrimary: '#000000' as const,
+    textSecondary: '#3A3A3C' as const,
+    textDisabled: '#8E8E93' as const,
 
     // Status
-    success: '#00C853' as const,
-    error: '#FF5252' as const,
-    warning: '#FFC107' as const,
-    info: '#2196F3' as const,
+    success: '#34C759' as const,
+    error: '#FF3B30' as const,
+    warning: '#FF9500' as const,
+    info: '#007AFF' as const,
 
     // Accent
-    income: '#00C853' as const,
-    expense: '#FF5252' as const,
+    income: '#34C759' as const,
+    expense: '#FF3B30' as const,
   },
   spacing: {
     xs: 4,

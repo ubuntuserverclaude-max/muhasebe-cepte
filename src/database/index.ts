@@ -1,3 +1,4 @@
+// SAFE_INIT_PATCHED
 import { Database } from '@nozbe/watermelondb';
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
 import { schema } from './schema';
@@ -13,6 +14,9 @@ import { PromissoryNote } from './models/PromissoryNote';
 const adapter = new SQLiteAdapter({
   schema,
   dbName: 'MuhasebeDB',
+  onSetUpError: (error) => {
+    console.error('SQLite setup error:', error);
+  },
 });
 
 export const database = new Database({

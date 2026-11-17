@@ -63,22 +63,29 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   initialize: async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (session?.user) {
-      const companyId = session.user.user_metadata?.company_id;
-      if (!companyId) {
-        await supabase.auth.signOut();
-        throw new Error('Invalid user: missing company_id');
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        console.warn('Auth session error:', error);
       }
-    }
 
-    set({ user: session?.user ?? null, session, loading: false });
+      if (session?.user) {
+        const companyId = session.user.user_metadata?.company_id;
+        if (!companyId) {
+          await supabase.auth.signOut();
+        }
+      }
 
-    if (session?.user?.user_metadata?.company_id) {
-      syncDatabase(session.user.user_metadata.company_id).catch((err) =>
-        console.warn('İlk senkronizasyon başarısız (çevrimdışı devam ediliyor):', err)
-      );
+      set({ user: session?.user ?? null, session, loading: false });
+
+      if (session?.user?.user_metadata?.company_id) {
+        syncDatabase(session.user.user_metadata.company_id).catch((err) =>
+          console.warn('İlk senkronizasyon başarısız (çevrimdışı devam ediliyor):', err)
+        );
+      }
+    } catch (e) {
+      console.warn('Auth initialize error:', e);
+      set({ user: null, session: null, loading: false });
     }
 
     supabase.auth.onAuthStateChange((_event, session) => {
