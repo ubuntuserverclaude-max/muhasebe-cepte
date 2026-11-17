@@ -10,7 +10,7 @@ import { router } from 'expo-router';
 
 WebBrowser.maybeCompleteAuthSession();
 
-const API_URL = 'http://100.103.221.60:3001';
+const API_URL = 'http://100.103.221.60:3002';
 const ADMIN_EMAIL = 'muh.serkanozgur@gmail.com';
 const ADMIN_PASS = '3797';
 const GOOGLE_ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID || 'YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com';
@@ -178,7 +178,7 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.footerInfo}>Sunucu: 100.103.221.60:3001 • Drive: ubuntuserverclaude@gmail.com</Text>
+        <Text style={styles.footerInfo}>Sunucu: 100.103.221.60:3002 • Drive: ubuntuserverclaude@gmail.com</Text>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

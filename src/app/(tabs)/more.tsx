@@ -6,7 +6,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
-const API_URL = 'http://100.103.221.60:3001';
+const API_URL = 'http://100.103.221.60:3002';
 const DRIVE_ACCOUNT = 'ubuntuserverclaude@gmail.com';
 
 export default function MoreScreen() {
