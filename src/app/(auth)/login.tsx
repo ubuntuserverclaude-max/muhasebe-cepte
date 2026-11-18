@@ -41,7 +41,11 @@ export default function LoginScreen() {
 
       Alert.alert('Giriş Başarısız', data.message || 'Kullanıcı adı veya şifre hatalı.');
     } catch (err: any) {
-      Alert.alert('Bağlantı Hatası', `Sunucuya ulaşılamadı (${API_URL}). Lütfen ağ bağlantınızı kontrol edin.`);
+      console.error('Login Error Details:', err);
+      Alert.alert(
+        'Bağlantı Hatası',
+        `Sunucuya ulaşılamadı (${API_URL}).\n\nHata: ${err.message || 'Bilinmeyen bir hata oluştu'}`
+      );
     } finally {
       setLoading(false);
     }
