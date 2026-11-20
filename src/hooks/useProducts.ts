@@ -6,25 +6,54 @@ import { useAuthStore } from '@/store/authStore';
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const user = useAuthStore((state) => state.user);
-  const companyId = user?.user_metadata?.company_id;
-  const [loading, setLoading] = useState(!companyId);
+  const companyId = user?.user_metadata?.company_id || 'default-company';
+
+  const loadData = () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const subscription = database
+        .get<Product>('products')
+        .query(
+          Q.where('company_id', companyId),
+          Q.sortBy('name', Q.asc)
+        )
+        .observe()
+        .subscribe(
+          (data) => {
+            setProducts(data);
+            setLoading(false);
+          },
+            (err) => {
+            console.error('Products error:', err);
+            setError(err?.message || 'Ürünler yüklenirken hata oluştu');
+            setLoading(false);
+          }
+        );
+
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 3000);
+
+      return () => {
+        clearTimeout(timer);
+        subscription.unsubscribe();
+      };
+    } catch (err: any) {
+      console.error('Products query error:', err);
+      setError(err?.message || 'Ürünler yüklenirken hata oluştu');
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!companyId) {
-      return;
-    }
-
-    const subscription = database
-      .get<Product>('products')
-      .query(Q.where('company_id', companyId), Q.sortBy('name', Q.asc))
-      .observe()
-      .subscribe((data) => {
-        setProducts(data);
-        setLoading(false);
-      });
-
-    return () => subscription.unsubscribe();
+    const cleanup = loadData();
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, [companyId]);
 
   const addProduct = async (data: {
@@ -52,5 +81,5 @@ export function useProducts() {
     });
   };
 
-  return { products, loading, addProduct };
+  return { products, loading, error, refetch: loadData, addProduct };
 }

@@ -14,26 +14,55 @@ export interface InvoiceItemInput {
 }
 
 export function useInvoices() {
-  const user = useAuthStore((state) => state.user);
-  const companyId = user?.user_metadata?.company_id;
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loading, setLoading] = useState(!companyId);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const user = useAuthStore((state) => state.user);
+  const companyId = user?.user_metadata?.company_id || 'default-company';
+
+  const loadData = () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const subscription = database
+        .get<Invoice>('invoices')
+        .query(
+          Q.where('company_id', companyId),
+          Q.sortBy('date', Q.desc)
+        )
+        .observe()
+        .subscribe(
+          (data) => {
+            setInvoices(data);
+            setLoading(false);
+          },
+          (err) => {
+            console.error('Invoices error:', err);
+            setError(err?.message || 'Faturalar yüklenirken hata oluştu');
+            setLoading(false);
+          }
+        );
+
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 3000);
+
+      return () => {
+        clearTimeout(timer);
+        subscription.unsubscribe();
+      };
+    } catch (err: any) {
+      console.error('Invoices query error:', err);
+      setError(err?.message || 'Faturalar yüklenirken hata oluştu');
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!companyId) {
-      return;
-    }
-
-    const subscription = database
-      .get<Invoice>('invoices')
-      .query(Q.where('company_id', companyId), Q.sortBy('date', Q.desc))
-      .observe()
-      .subscribe((data) => {
-        setInvoices(data);
-        setLoading(false);
-      });
-
-    return () => subscription.unsubscribe();
+    const cleanup = loadData();
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, [companyId]);
 
   const addInvoice = async (data: {
@@ -84,5 +113,5 @@ export function useInvoices() {
     });
   };
 
-  return { invoices, loading, addInvoice };
+  return { invoices, loading, error, refetch: loadData, addInvoice };
 }

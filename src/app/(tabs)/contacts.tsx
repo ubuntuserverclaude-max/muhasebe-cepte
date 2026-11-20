@@ -8,7 +8,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { sanitizeInput, validateEmail } from '@/utils/validation';
 
 export default function ContactsScreen() {
-  const { contacts, loading, addContact } = useContacts();
+  const { contacts, loading, error, refetch, addContact } = useContacts();
   const [modalVisible, setModalVisible] = useState(false);
   const [type, setType] = useState<'customer' | 'supplier' | 'both'>('customer');
   const [name, setName] = useState('');
@@ -53,6 +53,17 @@ export default function ContactsScreen() {
     return (
       <View style={styles.container}>
         <Text style={styles.loadingText}>Yükleniyor...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <EmptyState icon="alert-circle-outline" message={error} />
+        <Button mode="contained" onPress={refetch} style={styles.retryButton} buttonColor={theme.colors.primary}>
+          Yeniden Dene
+        </Button>
       </View>
     );
   }
@@ -195,6 +206,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 50,
     fontSize: 16,
+  },
+  retryButton: {
+    margin: theme.spacing.lg,
   },
   fab: {
     position: 'absolute',

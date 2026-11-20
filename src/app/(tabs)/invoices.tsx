@@ -13,7 +13,7 @@ import { formatCurrency } from '@/utils/formatters';
 const TAX_RATE = 20;
 
 export default function InvoicesScreen() {
-  const { invoices, loading, addInvoice } = useInvoices();
+  const { invoices, loading, error, refetch, addInvoice } = useInvoices();
   const { contacts } = useContacts();
   const { products } = useProducts();
 
@@ -97,6 +97,17 @@ export default function InvoicesScreen() {
     return (
       <View style={styles.container}>
         <Text style={styles.loadingText}>Yükleniyor...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <EmptyState icon="alert-circle-outline" message={error} />
+        <Button mode="contained" onPress={refetch} style={styles.retryButton} buttonColor={theme.colors.primary}>
+          Yeniden Dene
+        </Button>
       </View>
     );
   }
@@ -278,6 +289,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 50,
     fontSize: 16,
+  },
+  retryButton: {
+    margin: theme.spacing.lg,
   },
   fab: {
     position: 'absolute',

@@ -6,25 +6,54 @@ import { useAuthStore } from '@/store/authStore';
 
 export function useContacts() {
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const user = useAuthStore((state) => state.user);
-  const companyId = user?.user_metadata?.company_id;
-  const [loading, setLoading] = useState(!companyId);
+  const companyId = user?.user_metadata?.company_id || 'default-company';
+
+  const loadData = () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const subscription = database
+        .get<Contact>('contacts')
+        .query(
+          Q.where('company_id', companyId),
+          Q.sortBy('name', Q.asc)
+        )
+        .observe()
+        .subscribe(
+          (data) => {
+            setContacts(data);
+            setLoading(false);
+          },
+          (err) => {
+            console.error('Contacts error:', err);
+            setError(err?.message || 'Cariler yüklenirken hata oluştu');
+            setLoading(false);
+          }
+        );
+
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 3000);
+
+      return () => {
+        clearTimeout(timer);
+        subscription.unsubscribe();
+      };
+    } catch (err: any) {
+      console.error('Contacts query error:', err);
+      setError(err?.message || 'Cariler yüklenirken hata oluştu');
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!companyId) {
-      return;
-    }
-
-    const subscription = database
-      .get<Contact>('contacts')
-      .query(Q.where('company_id', companyId), Q.sortBy('name', Q.asc))
-      .observe()
-      .subscribe((data) => {
-        setContacts(data);
-        setLoading(false);
-      });
-
-    return () => subscription.unsubscribe();
+    const cleanup = loadData();
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, [companyId]);
 
   const addContact = async (data: {
@@ -51,5 +80,5 @@ export function useContacts() {
     });
   };
 
-  return { contacts, loading, addContact };
+  return { contacts, loading, error, refetch: loadData, addContact };
 }
