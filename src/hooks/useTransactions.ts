@@ -6,29 +6,55 @@ import { useAuthStore } from '@/store/authStore';
 
 export function useTransactions(limit = 50) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const user = useAuthStore((state) => state.user);
-  const companyId = user?.user_metadata?.company_id;
-  const [loading, setLoading] = useState(!companyId);
+  const companyId = user?.user_metadata?.company_id || 'default-company';
+
+  const loadData = () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const subscription = database
+        .get<Transaction>('transactions')
+        .query(
+          Q.where('company_id', companyId),
+          Q.sortBy('date', Q.desc),
+          Q.take(limit)
+        )
+        .observe()
+        .subscribe(
+          (data) => {
+            setTransactions(data);
+            setLoading(false);
+          },
+          (err) => {
+            console.error('Transactions error:', err);
+            setError(err?.message || 'İşlemler yüklenirken hata oluştu');
+            setLoading(false);
+          }
+        );
+
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 3000);
+
+      return () => {
+        clearTimeout(timer);
+        subscription.unsubscribe();
+      };
+    } catch (err: any) {
+      console.error('Transactions query error:', err);
+      setError(err?.message || 'İşlemler yüklenirken hata oluştu');
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!companyId) {
-      return;
-    }
-
-    const subscription = database
-      .get<Transaction>('transactions')
-      .query(
-        Q.where('company_id', companyId),
-        Q.sortBy('date', Q.desc),
-        Q.take(limit)
-      )
-      .observe()
-      .subscribe((data) => {
-        setTransactions(data);
-        setLoading(false);
-      });
-
-    return () => subscription.unsubscribe();
+    const cleanup = loadData();
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, [companyId, limit]);
 
   const addTransaction = async (data: {
@@ -56,5 +82,5 @@ export function useTransactions(limit = 50) {
     });
   };
 
-  return { transactions, loading, addTransaction };
+  return { transactions, loading, error, refetch: loadData, addTransaction };
 }
